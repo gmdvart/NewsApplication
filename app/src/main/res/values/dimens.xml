@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="padding">8dp</dimen>
+    <dimen name="margin">8dp</dimen>
+
+    <dimen name="image_width">128dp</dimen>
+    <dimen name="image_height">128dp</dimen>
+
+    <item name="headline_max_lines" type="dimen" format="integer">2</item>
+</resources>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:layout_margin="8dp">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+        <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/padding"
+                android:orientation="vertical"
+                android:layout_weight="2"
+                android:layout_gravity="center">
+
+            <TextView
+                    android:id="@+id/headline_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="@dimen/headline_max_lines"
+                    android:ellipsize="end"
+                    style="@style/TextAppearance.Material3.HeadlineLarge"
+                    tools:text="Headline"/>
+
+            <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/padding"/>
+
+            <TextView
+                    android:id="@+id/source_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/TextAppearance.Material3.BodyLarge"
+                    android:textAllCaps="true"
+                    tools:text="Source"/>
+        </LinearLayout>
+
+        <ImageView
+                android:id="@+id/image_view"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/image_height"
+                android:importantForAccessibility="no"
+                android:scaleType="centerCrop"
+                android:layout_weight="1"
+                tools:src="@drawable/ic_broken_image"/>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
