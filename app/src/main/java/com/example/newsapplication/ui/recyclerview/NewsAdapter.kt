@@ -1,8 +1,9 @@
-package com.example.newsapplication.ui.adapter
+package com.example.newsapplication.ui.recyclerview
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.newsapplication.R
@@ -10,10 +11,8 @@ import com.example.newsapplication.databinding.ListItemBinding
 import com.example.newsapplication.model.Article
 
 class NewsAdapter(
-    private val onArticleClickListener: OnArticleClickListener
-) : RecyclerView.Adapter<NewsAdapter.ArticleViewHolder>() {
-
-    private var articles: List<Article> = listOf()
+    private val onArticleClick: (Article) -> Unit = {}
+) : PagingDataAdapter<Article, NewsAdapter.ArticleViewHolder>(ARTICLE_COMPARATOR) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArticleViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -22,28 +21,18 @@ class NewsAdapter(
     }
 
     override fun onBindViewHolder(holder: ArticleViewHolder, position: Int) {
-        val article = articles[position]
-        holder.itemView.setOnClickListener {
-            Log.d("HomeFragment", "onClick")
-            onArticleClickListener.onClickArticle(article)
+        val item = getItem(position)
+        item?.let { article ->
+            holder.itemView.setOnClickListener { onArticleClick.invoke(item) }
+            holder.bind(article)
         }
-        holder.onBind(article)
-    }
-
-    override fun getItemCount(): Int {
-        return articles.size
-    }
-
-    fun submitList(articles: List<Article>) {
-        this.articles = articles
-        notifyDataSetChanged()
     }
 
     inner class ArticleViewHolder(
         private val binding: ListItemBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun onBind(article: Article) {
+        fun bind(article: Article) {
             with(binding) {
                 headlineTextView.text = article.title
                 sourceTextView.text = article.source?.name
@@ -55,7 +44,15 @@ class NewsAdapter(
         }
     }
 
-    interface OnArticleClickListener {
-        fun onClickArticle(article: Article)
+    companion object {
+        private val ARTICLE_COMPARATOR = object : DiffUtil.ItemCallback<Article>() {
+            override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean {
+                return oldItem.title == newItem.title
+            }
+
+            override fun areContentsTheSame(oldItem: Article, newItem: Article): Boolean {
+                return oldItem == newItem
+            }
+        }
     }
 }

@@ -1,61 +1,33 @@
 package com.example.newsapplication.ui
 
-import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.example.newsapplication.NewsApplication
 import com.example.newsapplication.data.NewsRepository
 import com.example.newsapplication.model.Article
-import com.example.newsapplication.model.ArticlesResponse
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import okio.IOException
-import retrofit2.HttpException
-import java.lang.Exception
 
-private const val TAG = "NewsViewModel"
+@OptIn(ExperimentalCoroutinesApi::class)
+class NewsViewModel(private val newsRepository: NewsRepository) : ViewModel() {
 
-class NewsViewModel(
-    private val newsRepository: NewsRepository
-) : ViewModel() {
+    val pagingDataFlow: Flow<PagingData<Article>>
 
-    enum class ResponseStatus {
-        SUCCESS,
-        LOADING,
-        ERROR
-    }
+    val searchAction: (SearchInfo) -> Unit
 
-    private var _apiStatus: MutableLiveData<ResponseStatus> = MutableLiveData()
-    val apiStatus: LiveData<ResponseStatus>
-        get() = _apiStatus
+    private var _selectedArticle: MutableStateFlow<Article?> = MutableStateFlow(null)
+    val selectedArticle: StateFlow<Article?>
+        get() = _selectedArticle.asStateFlow()
 
-    private var _articlesResponse: MutableLiveData<ArticlesResponse> = MutableLiveData()
-    val articlesResponse: LiveData<ArticlesResponse>
-        get() = _articlesResponse
-
-    private var _selectedArticle: MutableLiveData<Article> = MutableLiveData()
-    val selectedArticle: LiveData<Article>
-        get() = _selectedArticle
-
-    fun loadArticles(country: String = "us", category: String = "general", query: String? = null, pageIndex: Int = 0) {
-        _apiStatus.value = ResponseStatus.LOADING
-        viewModelScope.launch {
-            try {
-                _articlesResponse.value = newsRepository.getArticles(country, category, query, pageIndex)
-                _apiStatus.value = ResponseStatus.SUCCESS
-            } catch (e: Exception) {
-                _apiStatus.value = ResponseStatus.ERROR
-                when (e) {
-                    is IOException -> {
-                        e.message?.let { Log.e(TAG, "Caught an IOException: $it") }
-                    }
-                    is HttpException -> {
-                        e.message?.let { Log.e(TAG, "Caught an HttpException: $it") }
-                    }
-                }
-            }
-        }
+    private fun searchArticles(queryString: String? = null, category: String? = null): Flow<PagingData<Article>> {
+        return newsRepository.getSearchResultStream(query = queryString, category = category)
     }
 
     fun selectArticle(article: Article) {
@@ -63,7 +35,22 @@ class NewsViewModel(
     }
 
     init {
-        loadArticles()
+        val searchSharedFlow = MutableSharedFlow<SearchInfo>()
+
+        val currentSearch = searchSharedFlow
+            .distinctUntilChanged()
+            .onStart { emit(SearchInfo()) }
+
+        pagingDataFlow = currentSearch
+            .flatMapLatest { searchInfo ->
+                searchArticles(queryString = searchInfo.searchQuery, category = searchInfo.category)
+            }.cachedIn(viewModelScope)
+
+        searchAction = { searchQuery ->
+            viewModelScope.launch {
+                searchSharedFlow.emit(searchQuery)
+            }
+        }
     }
 
     companion object {
@@ -74,4 +61,10 @@ class NewsViewModel(
             }
         }
     }
+
 }
+
+data class SearchInfo(
+    val searchQuery: String? = null,
+    val category: String? = null
+)

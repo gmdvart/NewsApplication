@@ -2,10 +2,15 @@
     <string name="app_name">News</string>
     <string name="api_key">aba5e203e0c0457a8f4fde6e4daa8acb</string>
     <string name="search_hint">Search news…</string>
-    <string name="chip_business">Business</string>
-    <string name="chip_entertainment">Entertainment</string>
-    <string name="chip_health">Health</string>
-    <string name="chip_science">Science</string>
-    <string name="chip_sports">Sports</string>
-    <string name="chip_technology">Technology</string>
+    <string name="search">Search</string>
+    <string name="category_general">General</string>
+    <string name="category_business">Business</string>
+    <string name="category_entertainment">Entertainment</string>
+    <string name="category_health">Health</string>
+    <string name="category_science">Science</string>
+    <string name="category_sports">Sports</string>
+    <string name="category_technology">Technology</string>
+    <string name="retry">Retry</string>
+    <string name="search_news">Search News</string>
+    <string name="no_results">No results were found.</string>
 </resources>

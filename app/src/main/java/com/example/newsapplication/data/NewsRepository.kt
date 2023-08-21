@@ -1,21 +1,30 @@
 package com.example.newsapplication.data
 
-import android.content.Context
-import com.example.newsapplication.R
-import com.example.newsapplication.model.ArticlesResponse
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import com.example.newsapplication.model.Article
 import com.example.newsapplication.network.NewsApi
+import kotlinx.coroutines.flow.Flow
 
-class NewsRepository(
-    private val context: Context,
-    private val newsApi: NewsApi
-) {
-    suspend fun getArticles(
-        country: String,
-        category: String,
-        query: String?,
-        pageIndex: Int
-    ): ArticlesResponse {
-        val apiKey: String = context.getString(R.string.api_key)
-        return newsApi.getArticles(apiKey, country, category, query, pageIndex)
+class NewsRepository(private val newsApi: NewsApi) {
+
+    fun getSearchResultStream(query: String?, category: String?): Flow<PagingData<Article>> {
+        val pagingSourceFactory = {
+            ArticlePagingSource(
+                service = newsApi,
+                query = query,
+                category = category
+            )
+        }
+
+        return Pager(
+            config = PagingConfig(pageSize = DEFAULT_PAGE_LOAD_SIZE, enablePlaceholders = false),
+            pagingSourceFactory = pagingSourceFactory
+        ).flow
+    }
+
+    companion object {
+        const val DEFAULT_PAGE_LOAD_SIZE = 6
     }
 }

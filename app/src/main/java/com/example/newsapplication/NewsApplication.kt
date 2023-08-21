@@ -1,8 +1,8 @@
 package com.example.newsapplication
 
 import android.app.Application
-import com.example.newsapplication.data.AppDataContainer
-import com.example.newsapplication.data.NewsApplicationContainer
+import com.example.newsapplication.injection.AppDataContainer
+import com.example.newsapplication.injection.NewsApplicationContainer
 
 class NewsApplication : Application() {
 
@@ -12,6 +12,6 @@ class NewsApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        _container = NewsApplicationContainer(this)
+        _container = NewsApplicationContainer()
     }
 }
