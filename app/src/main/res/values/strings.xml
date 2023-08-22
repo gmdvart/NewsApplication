@@ -13,4 +13,5 @@
     <string name="retry">Retry</string>
     <string name="search_news">Search News</string>
     <string name="no_results">No results were found.</string>
+    <string name="select_article">Select the article for more details.</string>
 </resources>

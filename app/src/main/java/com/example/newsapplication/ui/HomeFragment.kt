@@ -1,11 +1,9 @@
 package com.example.newsapplication.ui
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -25,7 +23,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 
-class HomeFragment : Fragment(){
+class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
 
@@ -109,14 +107,14 @@ class HomeFragment : Fragment(){
     }
 
     private fun FragmentHomeBinding.bindSearch(searchAction: (SearchInfo) -> Unit) {
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
+        searchTextView.setOnKeyListener { _, keyCode, event ->
+            if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
                 performSearch(searchAction)
-                return true
+                true
+            } else {
+                false
             }
-
-            override fun onQueryTextChange(newText: String?): Boolean = false
-        })
+        }
 
         chipGroup.setOnCheckedStateChangeListener { _, checkedIds ->
             val checkedId = if (checkedIds.size > 0) checkedIds[0] else 0
@@ -137,13 +135,14 @@ class HomeFragment : Fragment(){
     }
 
     private fun performSearch(searchAction: (SearchInfo) -> Unit) {
-        KeyboardManger(requireContext()).hideKeyboard(view)
-
         with(binding) {
-            searchView.clearFocus()
-            recyclerView.scrollToPosition(0)
-            searchView.query?.trim().let {
-                if (!it.isNullOrBlank()) searchAction(SearchInfo(searchQuery = it.toString()))
+            searchTextView.text?.trim().let {
+                if (!it.isNullOrBlank()) {
+                    KeyboardManger(requireContext()).hideKeyboard(view)
+                    recyclerView.scrollToPosition(0)
+                    searchTextView.clearFocus()
+                    searchAction(SearchInfo(searchQuery = it.toString()))
+                }
             }
         }
     }

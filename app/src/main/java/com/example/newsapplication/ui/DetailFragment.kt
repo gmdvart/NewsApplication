@@ -27,8 +27,6 @@ class DetailFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         displayArticleInfo()
     }
 
@@ -37,6 +35,7 @@ class DetailFragment : Fragment() {
             viewModel.selectedArticle.collectLatest { article ->
                 article?.let {
                     with(binding) {
+                        selectArticleTextView.visibility = View.GONE
                         imageView.load(it.urlToImage)
                         headlineTextView.text = it.title
                         authorTextView.text = it.author

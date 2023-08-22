@@ -112,16 +112,28 @@
         <com.google.android.material.appbar.AppBarLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:backgroundTint="?attr/colorSurface"
                 app:liftOnScroll="false">
 
-            <androidx.appcompat.widget.SearchView
-                    android:id="@+id/search_view"
+            <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="?actionBarSize"
-                    app:layout_scrollFlags="scroll"
-                    app:iconifiedByDefault="false"
-                    app:defaultQueryHint="@string/search_hint"
-                    android:background="?attr/colorSurface"/>
+                    android:layout_height="wrap_content"
+                    app:hintEnabled="false"
+                    android:layout_margin="8dp"
+                    app:layout_scrollFlags="scroll|enterAlways"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/search_text_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:maxLines="1"
+                        android:lines="1"
+                        android:singleLine="true"
+                        android:imeOptions="actionSearch"
+                        android:hint="@string/search_hint"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
         </com.google.android.material.appbar.AppBarLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
@@ -129,5 +141,6 @@
             android:id="@+id/detail_fragment_container"
             android:name="com.example.newsapplication.ui.DetailFragment"
             android:layout_width="300dp"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
 </androidx.slidingpanelayout.widget.SlidingPaneLayout>
